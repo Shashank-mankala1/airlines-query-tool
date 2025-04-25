@@ -11,11 +11,11 @@ app.secret_key = os.urandom(24)
 
 def connect_db():
     conn = psycopg2.connect(
-        dbname="airlinesFinal",   # your db name
-        user="postgres",          # your user
-        password="Welcome@1234", # your password
-        host="localhost",
-        port="5432"
+        dbname=os.getenv("airlines_el2s"),
+        user=os.getenv("airlines_el2s_user"),
+        password=os.getenv("w6IijZtQpKLIlx3leZ27eIC16esPlihw"),
+        host=os.getenv("dpg-d05tkipr0fns73en7v2g-a"),
+        port=os.getenv("5432")
     )
     return conn
 
