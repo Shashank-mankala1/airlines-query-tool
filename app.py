@@ -10,14 +10,20 @@ app.secret_key = os.urandom(24)
 
 
 def connect_db():
+    print("Connecting to DB with:")
+    print("DB_HOST:", os.getenv('DB_HOST'))
+    print("DB_NAME:", os.getenv('DB_NAME'))
+    print("DB_USER:", os.getenv('DB_USER'))
+
     conn = psycopg2.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        dbname=os.getenv('DB_NAME'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        host=os.getenv('DB_HOST'),
+        port=os.getenv('DB_PORT')
     )
     return conn
+
 
 def get_table_and_column_info():
     conn = connect_db()
