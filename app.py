@@ -7,14 +7,7 @@ import os
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-
-
 def connect_db():
-    print("Connecting to DB with:")
-    print("DB_HOST:", os.getenv('DB_HOST'))
-    print("DB_NAME:", os.getenv('DB_NAME'))
-    print("DB_USER:", os.getenv('DB_USER'))
-
     conn = psycopg2.connect(
         dbname=os.getenv('DB_NAME'),
         user=os.getenv('DB_USER'),
@@ -29,16 +22,14 @@ def get_table_and_column_info():
     conn = connect_db()
     cur = conn.cursor()
 
-    # Get list of all public tables
     cur.execute("""
         SELECT table_name
         FROM information_schema.tables
         WHERE table_schema = 'public'
-        ORDER BY table_name;
-    """)
+        ORDER BY table_name;""")
+    
     tables = cur.fetchall()
 
-    # Now get columns for each table
     table_info = {}
     for table in tables:
         table_name = table[0]
@@ -46,8 +37,7 @@ def get_table_and_column_info():
             SELECT column_name, data_type
             FROM information_schema.columns
             WHERE table_name = %s
-            ORDER BY ordinal_position;
-        """, (table_name,))
+            ORDER BY ordinal_position;""", (table_name,))
         columns = cur.fetchall()
         table_info[table_name] = columns
 
@@ -61,7 +51,7 @@ def run_user_query(user_query):
     cur = conn.cursor()
     try:
         cur.execute(user_query)
-        if cur.description:  # Only SELECT queries have description
+        if cur.description:
             columns = [desc[0] for desc in cur.description]
             results = cur.fetchall()
         else:
@@ -87,7 +77,7 @@ def home():
         columns, results = run_user_query(user_query)
         session['columns'] = columns
         session['results'] = results
-        default_query = user_query  # preserve user's query text
+        default_query = user_query
 
     return render_template("index.html", table_info=table_info, columns=columns, results=results, default_query=default_query)
 
@@ -109,7 +99,6 @@ def download_csv():
                      mimetype='text/csv',
                      as_attachment=True,
                      download_name='query_result.csv')
-
 
 if __name__ == "__main__":
     app.run(debug=True)
